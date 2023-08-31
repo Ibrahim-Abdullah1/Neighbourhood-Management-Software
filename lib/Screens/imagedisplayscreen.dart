@@ -42,6 +42,18 @@ class _ShowImageState extends State<ShowImage> {
     return storedPins.map((pin) => PinData.fromMap(jsonDecode(pin))).toList();
   }
 
+  Future<void> deletePinData(String imagePath, PinData pin) async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = "pins_$imagePath";
+    List<String> storedPins = prefs.getStringList(key) ?? [];
+
+    // Find and remove the pin data from storedPins
+    String pinJson = jsonEncode(pin.toMap());
+    storedPins.remove(pinJson);
+
+    await prefs.setStringList(key, storedPins);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -160,6 +172,24 @@ class _ShowImageState extends State<ShowImage> {
                 },
                 child: Text('Submit'),
               ),
+              if (pinData != null) // Conditional rendering of the delete button
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      await deletePinData(imagePath!, pinData);
+                      setState(() {
+                        pinsData.remove(pinData);
+                      });
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Delete'),
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.red, // Background color
+                      onPrimary: Colors.white, // Foreground color
+                    ),
+                  ),
+                ),
             ],
           ),
         );
