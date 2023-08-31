@@ -63,16 +63,17 @@ class _SignInState extends State<SignIn> {
         toolbarOpacity: 0.8,
         shadowColor: Colors.blueGrey,
         shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-          bottomRight: Radius.circular(28),
-          bottomLeft: Radius.circular(28),
-        )),
+            //     borderRadius: BorderRadius.only(
+            //   bottomRight: Radius.circular(28),
+            //   bottomLeft: Radius.circular(28),
+            // )
+            ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            borderRadius: BorderRadius.only(
-              bottomRight: Radius.circular(28),
-              bottomLeft: Radius.circular(28),
-            ),
+            // borderRadius: BorderRadius.only(
+            //   bottomRight: Radius.circular(28),
+            //   bottomLeft: Radius.circular(28),
+            // ),
             gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomLeft,

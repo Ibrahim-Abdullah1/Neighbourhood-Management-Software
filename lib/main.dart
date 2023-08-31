@@ -1,5 +1,4 @@
 import "package:flutter/material.dart";
-import "package:neighborhood_management_software/Screens/displayimage.dart";
 import "package:neighborhood_management_software/Screens/imagedisplayscreen.dart";
 import "package:neighborhood_management_software/Screens/signin.dart";
 import "package:neighborhood_management_software/Screens/uploadimage.dart";
