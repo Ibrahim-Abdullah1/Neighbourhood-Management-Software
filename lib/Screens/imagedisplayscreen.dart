@@ -56,6 +56,108 @@ class _ShowImageState extends State<ShowImage> {
     });
   }
 
+  Future<void> _showPinForm({PinData? pinData}) async {
+    if (pinData != null) {
+      // If pin data is passed, populate the fields
+      firstNameController.text = pinData.firstName;
+      lastNameController.text = pinData.lastName;
+      addressController.text = pinData.address;
+      pinColor = pinData.pinColor;
+    } else {
+      // Else, clear the fields
+      firstNameController.clear();
+      lastNameController.clear();
+      addressController.clear();
+    }
+    return await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: firstNameController,
+                decoration: InputDecoration(labelText: 'First Name'),
+              ),
+              TextFormField(
+                controller: lastNameController,
+                decoration: InputDecoration(labelText: 'Last Name'),
+              ),
+              TextFormField(
+                controller: addressController,
+                decoration: InputDecoration(labelText: 'Address'),
+              ),
+              DropdownButton<String>(
+                value: 'Qwners', // Default value for the sake of demonstration
+                items: <String>[
+                  'Qwners',
+                  'Renter',
+                  'Paid',
+                  'Unpaid',
+                  'kids',
+                  'Dog',
+                  'Pool'
+                ].map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  if (newValue != null) {
+                    switch (newValue) {
+                      case 'Qwners':
+                        pinColor = Color.fromARGB(255, 4, 95, 7);
+                        break;
+                      case 'Renter':
+                        pinColor = Colors.red;
+                        break;
+                      case 'Paid':
+                        pinColor = Colors.green;
+                        break;
+                      case 'Unpaid':
+                        pinColor = Colors.black38;
+                        break;
+                      case 'kids':
+                        pinColor = Colors.black;
+                        break;
+                      case 'Dog':
+                        pinColor = Color.fromARGB(255, 82, 51, 40);
+                        break;
+                      case 'Pool':
+                        pinColor = Colors.green;
+                        break;
+                      default:
+                        pinColor = Colors.blue;
+                    }
+                  }
+                },
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  final pinData = PinData(
+                    position: latestTappedPosition!,
+                    firstName: firstNameController.text,
+                    lastName: lastNameController.text,
+                    address: addressController.text,
+                    pinColor: pinColor,
+                  );
+                  await savePinData(imagePath!, pinData);
+                  setState(() {
+                    pinsData.add(pinData);
+                  });
+                  Navigator.of(context).pop();
+                },
+                child: Text('Submit'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void loadPins() async {
     final pins = await retrievePinData(imagePath!);
     setState(() {
@@ -179,103 +281,38 @@ class _ShowImageState extends State<ShowImage> {
               child: GestureDetector(
                 onTapUp: (details) async {
                   RenderBox renderBox = context.findRenderObject() as RenderBox;
-                  Size imageSize = renderBox.size;
+                  Offset clickedPosition =
+                      renderBox.globalToLocal(details.globalPosition);
+                  PinData? clickedPinData;
+
+                  // Check if clicked near any existing pin
+                  for (PinData pinData in pinsData) {
+                    if ((pinData.position.dx - clickedPosition.dx).abs() < 10 &&
+                        (pinData.position.dy - clickedPosition.dy).abs() < 10) {
+                      clickedPinData = pinData;
+                      print(
+                          "Pin clicked at: ${pinData.position}"); // Debug statement
+                      break;
+                    }
+                  }
+
+                  if (clickedPinData != null) {
+                    // Fill the form with the data of the clicked pin
+                    firstNameController.text = clickedPinData.firstName;
+                    lastNameController.text = clickedPinData.lastName;
+                    addressController.text = clickedPinData.address;
+                    pinColor = clickedPinData.pinColor;
+                  } else {
+                    // Clear the form for a new pin
+                    firstNameController.clear();
+                    lastNameController.clear();
+                    addressController.clear();
+                  }
 
                   setState(() {
                     latestTappedPosition = details.localPosition;
                   });
-
-                  await showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            TextFormField(
-                              controller: firstNameController,
-                              decoration:
-                                  InputDecoration(labelText: 'First Name'),
-                            ),
-                            TextFormField(
-                              controller: lastNameController,
-                              decoration:
-                                  InputDecoration(labelText: 'Last Name'),
-                            ),
-                            TextFormField(
-                              controller: addressController,
-                              decoration: InputDecoration(labelText: 'Address'),
-                            ),
-                            DropdownButton<String>(
-                              value:
-                                  'Qwners', // Default value for the sake of demonstration
-                              items: <String>[
-                                'Qwners',
-                                'Renter',
-                                'Paid',
-                                'Unpaid',
-                                'kids',
-                                'Dog',
-                                'Pool'
-                              ].map<DropdownMenuItem<String>>((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              onChanged: (String? newValue) {
-                                if (newValue != null) {
-                                  switch (newValue) {
-                                    case 'Qwners':
-                                      pinColor = Color.fromARGB(255, 4, 95, 7);
-                                      break;
-                                    case 'Renter':
-                                      pinColor = Colors.red;
-                                      break;
-                                    case 'Paid':
-                                      pinColor = Colors.green;
-                                      break;
-                                    case 'Unpaid':
-                                      pinColor = Colors.black38;
-                                      break;
-                                    case 'kids':
-                                      pinColor = Colors.black;
-                                      break;
-                                    case 'Dog':
-                                      pinColor =
-                                          Color.fromARGB(255, 82, 51, 40);
-                                      break;
-                                    case 'Pool':
-                                      pinColor = Colors.green;
-                                      break;
-                                    default:
-                                      pinColor = Colors.blue;
-                                  }
-                                }
-                              },
-                            ),
-                            ElevatedButton(
-                              onPressed: () async {
-                                final pinData = PinData(
-                                  position: latestTappedPosition!,
-                                  firstName: firstNameController.text,
-                                  lastName: lastNameController.text,
-                                  address: addressController.text,
-                                  pinColor: pinColor,
-                                );
-                                await savePinData(imagePath, pinData);
-                                setState(() {
-                                  pinsData.add(pinData);
-                                });
-                                Navigator.of(context).pop();
-                              },
-                              child: Text('Submit'),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  );
+                  await _showPinForm();
                 },
                 child: Stack(
                   fit: StackFit.expand,
@@ -293,9 +330,9 @@ class _ShowImageState extends State<ShowImage> {
                         top: pin.position.dy,
                         left: pin.position.dx,
                         child: InkWell(
-                          onTap: () {
+                          onTap: () async {
                             // Display pin's data using a dialog, bottom sheet, or any other method.
-                            // You have access to pin.firstName, pin.lastName, etc.
+                            await _showPinForm(pinData: pin);
                           },
                           child: Icon(
                             Icons.location_pin,
