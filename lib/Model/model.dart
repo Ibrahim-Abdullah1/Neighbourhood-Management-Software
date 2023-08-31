@@ -6,6 +6,7 @@ class PinData {
   String lastName;
   String address;
   Color pinColor;
+  String dropdownValue;
 
   PinData({
     required this.position,
@@ -13,6 +14,7 @@ class PinData {
     required this.lastName,
     required this.address,
     required this.pinColor,
+    required this.dropdownValue, // Add this line
   });
 
   Map<String, dynamic> toMap() {
@@ -23,6 +25,7 @@ class PinData {
       'lastName': lastName,
       'address': address,
       'pinColor': pinColor.value, // storing the int value of the color
+      'dropdownValue': dropdownValue,
     };
   }
 
@@ -37,6 +40,7 @@ class PinData {
       pinColor: Color((map['pinColor'] is int)
           ? map['pinColor']
           : int.parse(map['pinColor'].toString())),
+      dropdownValue: map['dropdownValue'],
     );
   }
 }

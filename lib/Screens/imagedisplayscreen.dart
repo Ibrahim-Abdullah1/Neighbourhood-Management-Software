@@ -13,6 +13,7 @@ class ShowImage extends StatefulWidget {
 }
 
 class _ShowImageState extends State<ShowImage> {
+  String dropdownValue = "";
   String? imagePath;
   Offset? latestTappedPosition; // Add this line
   List<PinData> pinsData = [];
@@ -57,17 +58,20 @@ class _ShowImageState extends State<ShowImage> {
   }
 
   Future<void> _showPinForm({PinData? pinData}) async {
+    String currentDropdownValue = 'Qwners';
     if (pinData != null) {
       // If pin data is passed, populate the fields
       firstNameController.text = pinData.firstName;
       lastNameController.text = pinData.lastName;
       addressController.text = pinData.address;
       pinColor = pinData.pinColor;
+      currentDropdownValue = pinData.dropdownValue;
     } else {
       // Else, clear the fields
       firstNameController.clear();
       lastNameController.clear();
       addressController.clear();
+      currentDropdownValue = 'Qwners';
     }
     return await showDialog(
       context: context,
@@ -89,7 +93,8 @@ class _ShowImageState extends State<ShowImage> {
                 decoration: InputDecoration(labelText: 'Address'),
               ),
               DropdownButton<String>(
-                value: 'Qwners', // Default value for the sake of demonstration
+                value:
+                    currentDropdownValue, // Default value for the sake of demonstration
                 items: <String>[
                   'Qwners',
                   'Renter',
@@ -106,31 +111,34 @@ class _ShowImageState extends State<ShowImage> {
                 }).toList(),
                 onChanged: (String? newValue) {
                   if (newValue != null) {
-                    switch (newValue) {
-                      case 'Qwners':
-                        pinColor = Color.fromARGB(255, 4, 95, 7);
-                        break;
-                      case 'Renter':
-                        pinColor = Colors.red;
-                        break;
-                      case 'Paid':
-                        pinColor = Colors.green;
-                        break;
-                      case 'Unpaid':
-                        pinColor = Colors.black38;
-                        break;
-                      case 'kids':
-                        pinColor = Colors.black;
-                        break;
-                      case 'Dog':
-                        pinColor = Color.fromARGB(255, 82, 51, 40);
-                        break;
-                      case 'Pool':
-                        pinColor = Colors.green;
-                        break;
-                      default:
-                        pinColor = Colors.blue;
-                    }
+                    setState(() {
+                      currentDropdownValue = newValue;
+                      switch (newValue) {
+                        case 'Qwners':
+                          pinColor = Color.fromARGB(255, 4, 95, 7);
+                          break;
+                        case 'Renter':
+                          pinColor = Colors.red;
+                          break;
+                        case 'Paid':
+                          pinColor = Colors.green;
+                          break;
+                        case 'Unpaid':
+                          pinColor = Colors.black38;
+                          break;
+                        case 'kids':
+                          pinColor = Colors.black;
+                          break;
+                        case 'Dog':
+                          pinColor = Color.fromARGB(255, 82, 51, 40);
+                          break;
+                        case 'Pool':
+                          pinColor = Colors.green;
+                          break;
+                        default:
+                          pinColor = Colors.blue;
+                      }
+                    });
                   }
                 },
               ),
@@ -142,6 +150,7 @@ class _ShowImageState extends State<ShowImage> {
                     lastName: lastNameController.text,
                     address: addressController.text,
                     pinColor: pinColor,
+                    dropdownValue: currentDropdownValue,
                   );
                   await savePinData(imagePath!, pinData);
                   setState(() {
@@ -156,6 +165,17 @@ class _ShowImageState extends State<ShowImage> {
         );
       },
     );
+  }
+
+  String getColorNameFromColor(Color color) {
+    if (color == Color.fromARGB(255, 4, 95, 7)) return 'Qwners';
+    if (color == Colors.red) return 'Renter';
+    if (color == Colors.green) return 'Paid';
+    if (color == Colors.black38) return 'Unpaid';
+    if (color == Colors.black) return 'kids';
+    if (color == Color.fromARGB(255, 82, 51, 40)) return 'Dog';
+    if (color == Colors.blue) return 'Pool';
+    return 'Qwners'; // default
   }
 
   void loadPins() async {
