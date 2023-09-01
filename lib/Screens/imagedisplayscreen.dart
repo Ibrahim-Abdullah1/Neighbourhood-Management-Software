@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:neighborhood_management_software/Model/model.dart';
 import 'package:neighborhood_management_software/Widgets/apptext.dart';
+import 'package:neighborhood_management_software/Widgets/dropdownwidget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ShowImage extends StatefulWidget {
@@ -104,6 +105,10 @@ class _ShowImageState extends State<ShowImage> {
                 controller: addressController,
                 decoration: InputDecoration(labelText: 'Address'),
               ),
+              // DropDownWidget(
+              //     currentDropdownValue: currentDropdownValue,
+              // pinColor: pinColor),
+
               DropdownButton<String>(
                 value:
                     currentDropdownValue, // Default value for the sake of demonstration
@@ -185,8 +190,8 @@ class _ShowImageState extends State<ShowImage> {
                     },
                     child: Text('Delete'),
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.red, // Background color
-                      onPrimary: Colors.white, // Foreground color
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.red, // Foreground color
                     ),
                   ),
                 ),
