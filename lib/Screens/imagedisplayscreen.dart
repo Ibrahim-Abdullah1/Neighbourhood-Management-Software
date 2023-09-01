@@ -15,6 +15,7 @@ class ShowImage extends StatefulWidget {
 }
 
 class _ShowImageState extends State<ShowImage> {
+  bool pinmark = false;
   List<PinData> displayedPins = [];
   String dropdownValue = "";
   String? imagePath;
@@ -33,7 +34,6 @@ class _ShowImageState extends State<ShowImage> {
     final prefs = await SharedPreferences.getInstance();
     final key = "pins_$imagePath";
     List<String> storedPins = prefs.getStringList(key) ?? [];
-
     storedPins.add(jsonEncode(pin.toMap()));
     await prefs.setStringList(key, storedPins);
   }
@@ -60,7 +60,7 @@ class _ShowImageState extends State<ShowImage> {
   void showOwnersOnly() {
     setState(() {
       displayedPins = pinsData
-          .where((pin) => pin.selectedItems.contains('Qwners'))
+          .where((pin) => pin.selectedItems.contains('Owners'))
           .toList();
     });
   }
@@ -180,11 +180,11 @@ class _ShowImageState extends State<ShowImage> {
                 runSpacing: 4.0,
                 children: [
                   CustomCheckbox(
-                    title: 'Qwners',
+                    title: 'Owners',
                     color: Color.fromARGB(255, 4, 95, 7),
-                    value: selectedItems.contains('Qwners'),
+                    value: selectedItems.contains('Owners'),
                     onChanged: (value) {
-                      handleCheckboxChange(value, 'Qwners', selectedItems);
+                      handleCheckboxChange(value, 'Owners', selectedItems);
                     },
                   ),
                   CustomCheckbox(
@@ -240,7 +240,7 @@ class _ShowImageState extends State<ShowImage> {
               ElevatedButton(
                 onPressed: () async {
                   Color chosenPinColor;
-                  if (selectedItems.contains('Qwners')) {
+                  if (selectedItems.contains('Owners')) {
                     chosenPinColor = Color.fromARGB(255, 4, 95, 7);
                   } else if (selectedItems.contains('Renter')) {
                     chosenPinColor = Colors.red;
@@ -268,6 +268,7 @@ class _ShowImageState extends State<ShowImage> {
                   await savePinData(imagePath!, pinData);
                   setState(() {
                     pinsData.add(pinData);
+                    displayedPins.add(pinData);
                   });
                   Navigator.of(context).pop();
                 },
@@ -281,6 +282,7 @@ class _ShowImageState extends State<ShowImage> {
                       await deletePinData(imagePath!, pinData);
                       setState(() {
                         pinsData.remove(pinData);
+                        displayedPins.remove(pinData);
                       });
                       Navigator.of(context).pop();
                     },
@@ -308,7 +310,7 @@ class _ShowImageState extends State<ShowImage> {
   }
 
   String getColorNameFromColor(Color color) {
-    if (color == Color.fromARGB(255, 4, 95, 7)) return 'Qwners';
+    if (color == Color.fromARGB(255, 4, 95, 7)) return 'Owners';
     if (color == Colors.red) return 'Renter';
     if (color == Colors.green) return 'Paid';
     if (color == Colors.black38) return 'Unpaid';
@@ -383,7 +385,7 @@ class _ShowImageState extends State<ShowImage> {
                     GestureDetector(
                       onTap: showOwnersOnly,
                       child: Text(
-                        " Qwners",
+                        " Owners",
                         style: TextStyle(
                             fontSize: 13, color: Color.fromARGB(255, 4, 95, 7)),
                       ),
