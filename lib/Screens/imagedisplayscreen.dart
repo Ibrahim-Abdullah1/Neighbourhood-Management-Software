@@ -15,6 +15,7 @@ class ShowImage extends StatefulWidget {
 }
 
 class _ShowImageState extends State<ShowImage> {
+  List<PinData> displayedPins = [];
   String dropdownValue = "";
   String? imagePath;
   Offset? latestTappedPosition; // Add this line
@@ -56,6 +57,72 @@ class _ShowImageState extends State<ShowImage> {
     await prefs.setStringList(key, storedPins);
   }
 
+  void showOwnersOnly() {
+    setState(() {
+      displayedPins = pinsData
+          .where((pin) => pin.selectedItems.contains('Qwners'))
+          .toList();
+    });
+  }
+
+  void showRiderOnly() {
+    setState(() {
+      displayedPins = pinsData
+          .where((pin) => pin.selectedItems.contains('Renter'))
+          .toList();
+    });
+  }
+
+  void showPaidOnly() {
+    setState(() {
+      displayedPins =
+          pinsData.where((pin) => pin.selectedItems.contains('Paid')).toList();
+    });
+  }
+
+  void showUnpaidOnly() {
+    setState(() {
+      displayedPins = pinsData
+          .where((pin) => pin.selectedItems.contains('Unpaid'))
+          .toList();
+    });
+  }
+
+  void showkidsOnly() {
+    setState(() {
+      displayedPins =
+          pinsData.where((pin) => pin.selectedItems.contains('kids')).toList();
+    });
+  }
+
+  void showDogOnly() {
+    setState(() {
+      displayedPins =
+          pinsData.where((pin) => pin.selectedItems.contains('Dog')).toList();
+    });
+  }
+
+  void showPoolOnly() {
+    setState(() {
+      displayedPins =
+          pinsData.where((pin) => pin.selectedItems.contains('Pool')).toList();
+    });
+  }
+
+  void showAllPins() {
+    setState(() {
+      displayedPins = List.from(pinsData);
+    });
+  }
+
+  void hideAllPins() {
+    setState(() {
+      displayedPins.clear();
+    });
+  }
+
+// Add other filtering methods as needed
+
   @override
   void initState() {
     super.initState();
@@ -63,6 +130,7 @@ class _ShowImageState extends State<ShowImage> {
     lastNameController = TextEditingController();
     addressController = TextEditingController();
     loadPins();
+    showAllPins();
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       setState(() {
         imagePath = ModalRoute.of(context)!.settings.arguments as String;
@@ -287,11 +355,14 @@ class _ShowImageState extends State<ShowImage> {
                       text: "Data",
                       size: screenWidth * 0.025,
                     ),
-                    const Row(
+                    Row(
                       children: [
-                        Text(
-                          "Summary Pins",
-                          style: TextStyle(fontSize: 14),
+                        GestureDetector(
+                          onTap: showAllPins,
+                          child: Text(
+                            "Summary Pins",
+                            style: TextStyle(fontSize: 14),
+                          ),
                         ),
                         Expanded(
                           child: Icon(
@@ -301,43 +372,61 @@ class _ShowImageState extends State<ShowImage> {
                         ),
                       ],
                     ),
-                    const Text(
-                      "Hide All Pins",
-                      style: TextStyle(fontSize: 14),
+                    GestureDetector(
+                      onTap: hideAllPins,
+                      child: const Text(
+                        "Hide All Pins",
+                        style: TextStyle(fontSize: 14),
+                      ),
                     ),
                     Expanded(child: Container()),
-                    Text(
-                      " Qwners",
-                      style: TextStyle(
-                          fontSize: 13, color: Color.fromARGB(255, 4, 95, 7)),
+                    GestureDetector(
+                      onTap: showOwnersOnly,
+                      child: Text(
+                        " Qwners",
+                        style: TextStyle(
+                            fontSize: 13, color: Color.fromARGB(255, 4, 95, 7)),
+                      ),
                     ),
                     SizedBox(
                       height: screenHeight * 0.005,
                     ),
-                    Text(
-                      " Renter",
-                      style: TextStyle(fontSize: 13, color: Colors.red),
+                    GestureDetector(
+                      onTap: showRiderOnly,
+                      child: Text(
+                        " Renter",
+                        style: TextStyle(fontSize: 13, color: Colors.red),
+                      ),
                     ),
                     SizedBox(
                       height: screenHeight * 0.005,
                     ),
-                    Text(
-                      " Paid",
-                      style: TextStyle(fontSize: 13, color: Colors.green),
+                    GestureDetector(
+                      onTap: showPaidOnly,
+                      child: Text(
+                        " Paid",
+                        style: TextStyle(fontSize: 13, color: Colors.green),
+                      ),
                     ),
                     SizedBox(
                       height: screenHeight * 0.005,
                     ),
-                    Text(
-                      " Unpaid",
-                      style: TextStyle(fontSize: 13, color: Colors.black38),
+                    GestureDetector(
+                      onTap: showUnpaidOnly,
+                      child: Text(
+                        " Unpaid",
+                        style: TextStyle(fontSize: 13, color: Colors.black38),
+                      ),
                     ),
                     SizedBox(
                       height: screenHeight * 0.005,
                     ),
-                    Text(
-                      " kids",
-                      style: TextStyle(fontSize: 13, color: Colors.black),
+                    GestureDetector(
+                      onTap: showkidsOnly,
+                      child: Text(
+                        " kids",
+                        style: TextStyle(fontSize: 13, color: Colors.black),
+                      ),
                     ),
                     SizedBox(
                       height: screenHeight * 0.005,
@@ -349,18 +438,24 @@ class _ShowImageState extends State<ShowImage> {
                     SizedBox(
                       height: screenHeight * 0.005,
                     ),
-                    Text(
-                      " Dog",
-                      style: TextStyle(
-                          fontSize: 13,
-                          color: const Color.fromARGB(255, 82, 51, 40)),
+                    GestureDetector(
+                      onTap: showDogOnly,
+                      child: Text(
+                        " Dog",
+                        style: TextStyle(
+                            fontSize: 13,
+                            color: const Color.fromARGB(255, 82, 51, 40)),
+                      ),
                     ),
                     SizedBox(
                       height: screenHeight * 0.005,
                     ),
-                    Text(
-                      " Pool",
-                      style: TextStyle(fontSize: 13, color: Colors.green),
+                    GestureDetector(
+                      onTap: showPoolOnly,
+                      child: Text(
+                        " Pool",
+                        style: TextStyle(fontSize: 13, color: Colors.green),
+                      ),
                     ),
                     SizedBox(
                       height: screenHeight * 0.1,
@@ -417,7 +512,7 @@ class _ShowImageState extends State<ShowImage> {
                         key: imageKey,
                       ),
                     ),
-                    ...pinsData.map((pin) {
+                    ...displayedPins.map((pin) {
                       return Positioned(
                         top: pin.position.dy,
                         left: pin.position.dx,
