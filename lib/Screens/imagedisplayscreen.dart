@@ -15,9 +15,6 @@ class ShowImage extends StatefulWidget {
 }
 
 class _ShowImageState extends State<ShowImage> {
-  List<PinData> displayedPins = [];
-  Set<String> activeFilters = {};
-  String? selectedPinType; // null means show all pins
   String dropdownValue = "";
   String? imagePath;
   Offset? latestTappedPosition; // Add this line
@@ -38,78 +35,6 @@ class _ShowImageState extends State<ShowImage> {
 
     storedPins.add(jsonEncode(pin.toMap()));
     await prefs.setStringList(key, storedPins);
-  }
-
-  void loadPins() async {
-    final pins = await retrievePinData(imagePath!);
-    setState(() {
-      pinsData = pins;
-      displayedPins = List.from(pins);
-    });
-  }
-
-  void showOwnersOnly() {
-    setState(() {
-      displayedPins = pinsData
-          .where((pin) => pin.selectedItems.contains('Qwners'))
-          .toList();
-    });
-  }
-
-  void showRenterssOnly() {
-    setState(() {
-      displayedPins = pinsData
-          .where((pin) => pin.selectedItems.contains('Renters'))
-          .toList();
-    });
-  }
-
-  void showPaidsOnly() {
-    setState(() {
-      displayedPins =
-          pinsData.where((pin) => pin.selectedItems.contains('Paid')).toList();
-    });
-  }
-
-  void showUnpaidOnly() {
-    setState(() {
-      displayedPins = pinsData
-          .where((pin) => pin.selectedItems.contains('Unpaid'))
-          .toList();
-    });
-  }
-
-  void showkidsOnly() {
-    setState(() {
-      displayedPins =
-          pinsData.where((pin) => pin.selectedItems.contains('kids')).toList();
-    });
-  }
-
-  void showDogOnly() {
-    setState(() {
-      displayedPins =
-          pinsData.where((pin) => pin.selectedItems.contains('Dog')).toList();
-    });
-  }
-
-  void showPoolOnly() {
-    setState(() {
-      displayedPins =
-          pinsData.where((pin) => pin.selectedItems.contains('Pool')).toList();
-    });
-  }
-
-  void showAllPins() {
-    setState(() {
-      displayedPins = List.from(pinsData);
-    });
-  }
-
-  void hideAllPins() {
-    setState(() {
-      displayedPins.clear();
-    });
   }
 
   Future<List<PinData>> retrievePinData(String imagePath) async {
@@ -212,7 +137,7 @@ class _ShowImageState extends State<ShowImage> {
                   ),
                   CustomCheckbox(
                     title: 'Unpaid',
-                    color: Colors.green,
+                    color: Colors.black38,
                     value: selectedItems.contains('Unpaid'),
                     onChanged: (value) {
                       handleCheckboxChange(value, 'Unpaid', selectedItems);
@@ -325,6 +250,14 @@ class _ShowImageState extends State<ShowImage> {
     return 'Qwners'; // default
   }
 
+  void loadPins() async {
+    final pins = await retrievePinData(imagePath!);
+    setState(() {
+      pinsData =
+          pins; // pinsData should be a List<PinData> defined in your state class.
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -368,93 +301,43 @@ class _ShowImageState extends State<ShowImage> {
                         ),
                       ],
                     ),
-                    GestureDetector(
-                      onTap: hideAllPins,
-                      child: const Text(
-                        "Hide All Pins",
-                        style: TextStyle(fontSize: 14),
-                      ),
+                    const Text(
+                      "Hide All Pins",
+                      style: TextStyle(fontSize: 14),
                     ),
                     Expanded(child: Container()),
-                    GestureDetector(
-                      onTap: () {
-                        showOwnersOnly();
-                      },
-                      child: const Text(
-                        " Qwners",
-                        style: TextStyle(
-                            fontSize: 13, color: Color.fromARGB(255, 4, 95, 7)),
-                      ),
+                    Text(
+                      " Qwners",
+                      style: TextStyle(
+                          fontSize: 13, color: Color.fromARGB(255, 4, 95, 7)),
                     ),
                     SizedBox(
                       height: screenHeight * 0.005,
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        if (activeFilters.contains("Renters")) {
-                          activeFilters.remove("Renters");
-                        } else {
-                          activeFilters.add("Renters");
-                        }
-                      },
-                      child: Text(
-                        " Renter",
-                        style: TextStyle(fontSize: 13, color: Colors.red),
-                      ),
+                    Text(
+                      " Renter",
+                      style: TextStyle(fontSize: 13, color: Colors.red),
                     ),
                     SizedBox(
                       height: screenHeight * 0.005,
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (activeFilters.contains("Paid")) {
-                            activeFilters.remove("Paid");
-                          } else {
-                            activeFilters.add("Paid");
-                          }
-                        });
-                      },
-                      child: Text(
-                        " Paid",
-                        style: TextStyle(fontSize: 13, color: Colors.green),
-                      ),
+                    Text(
+                      " Paid",
+                      style: TextStyle(fontSize: 13, color: Colors.green),
                     ),
                     SizedBox(
                       height: screenHeight * 0.005,
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (activeFilters.contains("Unpaid")) {
-                            activeFilters.remove("Unpaid");
-                          } else {
-                            activeFilters.add("Unpaid");
-                          }
-                        });
-                      },
-                      child: Text(
-                        " Unpaid",
-                        style: TextStyle(fontSize: 13, color: Colors.black38),
-                      ),
+                    Text(
+                      " Unpaid",
+                      style: TextStyle(fontSize: 13, color: Colors.black38),
                     ),
                     SizedBox(
                       height: screenHeight * 0.005,
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (activeFilters.contains("kids")) {
-                            activeFilters.remove("kids");
-                          } else {
-                            activeFilters.add("kids");
-                          }
-                        });
-                      },
-                      child: Text(
-                        " kids",
-                        style: TextStyle(fontSize: 13, color: Colors.black),
-                      ),
+                    Text(
+                      " kids",
+                      style: TextStyle(fontSize: 13, color: Colors.black),
                     ),
                     SizedBox(
                       height: screenHeight * 0.005,
@@ -466,40 +349,18 @@ class _ShowImageState extends State<ShowImage> {
                     SizedBox(
                       height: screenHeight * 0.005,
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (activeFilters.contains("Dog")) {
-                            activeFilters.remove("Dog");
-                          } else {
-                            activeFilters.add("Dog");
-                          }
-                        });
-                      },
-                      child: Text(
-                        " Dog",
-                        style: TextStyle(
-                            fontSize: 13,
-                            color: const Color.fromARGB(255, 82, 51, 40)),
-                      ),
+                    Text(
+                      " Dog",
+                      style: TextStyle(
+                          fontSize: 13,
+                          color: const Color.fromARGB(255, 82, 51, 40)),
                     ),
                     SizedBox(
                       height: screenHeight * 0.005,
                     ),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (activeFilters.contains("Pool")) {
-                            activeFilters.remove("Pool");
-                          } else {
-                            activeFilters.add("Pool");
-                          }
-                        });
-                      },
-                      child: Text(
-                        " Pool",
-                        style: TextStyle(fontSize: 13, color: Colors.green),
-                      ),
+                    Text(
+                      " Pool",
+                      style: TextStyle(fontSize: 13, color: Colors.green),
                     ),
                     SizedBox(
                       height: screenHeight * 0.1,
@@ -556,7 +417,7 @@ class _ShowImageState extends State<ShowImage> {
                         key: imageKey,
                       ),
                     ),
-                    ...displayedPins.map((pin) {
+                    ...pinsData.map((pin) {
                       return Positioned(
                         top: pin.position.dy,
                         left: pin.position.dx,
