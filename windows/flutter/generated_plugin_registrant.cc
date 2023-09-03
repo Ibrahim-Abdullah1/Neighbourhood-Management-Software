@@ -6,9 +6,15 @@
 
 #include "generated_plugin_registrant.h"
 
+#include <desktop_window/desktop_window_plugin.h>
 #include <file_selector_windows/file_selector_windows.h>
+#include <window_size/window_size_plugin.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
+  DesktopWindowPluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("DesktopWindowPlugin"));
   FileSelectorWindowsRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("FileSelectorWindows"));
+  WindowSizePluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("WindowSizePlugin"));
 }
