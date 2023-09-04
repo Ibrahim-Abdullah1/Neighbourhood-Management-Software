@@ -1,30 +1,24 @@
 import "dart:io";
-
+import "dart:ui";
 import "package:flutter/material.dart";
-import "package:neighborhood_management_software/Screens/displayimage.dart";
 import "package:neighborhood_management_software/Screens/imagedisplayscreen.dart";
 import "package:neighborhood_management_software/Screens/signin.dart";
 import "package:neighborhood_management_software/Screens/uploadimage.dart";
 import "package:window_size/window_size.dart";
 
-
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isWindows) {
-    // We'll get the actual screen dimensions dynamically.
-    // The following are placeholders till we get the actual values.
-    double screenWidth = 1920; // placeholder
-    double screenHeight = 1080; // placeholder
+    var pixelRatio = window.devicePixelRatio;
+    var physicalScreenSize = window.physicalSize;
+    var logicalScreenSize = physicalScreenSize / pixelRatio;
 
-    // Set these values after fetching from native code.
-    setWindowMaxSize(Size(screenWidth, screenHeight));
-    setWindowMinSize(Size(screenWidth, screenHeight));
+    setWindowMaxSize(logicalScreenSize);
+    setWindowMinSize(logicalScreenSize);
 
-    Future.delayed(Duration(seconds: 1), () {
-      setWindowFrame(Rect.fromCenter(
-          center: Offset(screenWidth / 2, screenHeight / 2),
-          width: screenWidth,
-          height: screenHeight));
+    Future<Null>.delayed(Duration(seconds: 1), () {
+      setWindowFrame(Rect.fromLTWH(
+          0, 0, logicalScreenSize.width, logicalScreenSize.height));
     });
   }
   runApp(MyApp());
