@@ -1,9 +1,11 @@
 import "dart:io";
 import "dart:ui";
 import "package:flutter/material.dart";
+import 'package:neighborhood_management_software/Providers/pinDataProvider.dart';
 import "package:neighborhood_management_software/Screens/imagedisplayscreen.dart";
 import "package:neighborhood_management_software/Screens/signin.dart";
 import "package:neighborhood_management_software/Screens/uploadimage.dart";
+import "package:provider/provider.dart";
 import "package:window_size/window_size.dart";
 
 void main() {
@@ -21,7 +23,12 @@ void main() {
           0, 0, logicalScreenSize.width, logicalScreenSize.height));
     });
   }
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => PinDataNotifier(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

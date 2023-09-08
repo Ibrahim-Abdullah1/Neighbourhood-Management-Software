@@ -1,10 +1,9 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:neighborhood_management_software/Model/model.dart';
+import 'package:neighborhood_management_software/Providers/pinDataProvider.dart';
 import 'package:neighborhood_management_software/Widgets/apptext.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:provider/provider.dart';
 import '../Widgets/CustomCheckBoxes.dart';
 
 class ShowImage extends StatefulWidget {
@@ -15,113 +14,15 @@ class ShowImage extends StatefulWidget {
 }
 
 class _ShowImageState extends State<ShowImage> {
-  bool pinmark = false;
   List<PinData> displayedPins = [];
-  String dropdownValue = "";
   String? imagePath;
-  Offset? latestTappedPosition; // Add this line
+  Offset? latestTappedPosition;
   List<PinData> pinsData = [];
-  List<Offset> tappedPositionsRatios = [];
   final GlobalKey imageKey = GlobalKey();
-  Offset? tappedRelativePosition;
-  Offset? tappedPosition;
   Color pinColor = Colors.blue;
   late TextEditingController firstNameController,
       lastNameController,
       addressController;
-
-  Future<void> savePinData(String imagePath, PinData pin) async {
-    final prefs = await SharedPreferences.getInstance();
-    final key = "pins_$imagePath";
-    List<String> storedPins = prefs.getStringList(key) ?? [];
-    storedPins.add(jsonEncode(pin.toMap()));
-    await prefs.setStringList(key, storedPins);
-  }
-
-  Future<List<PinData>> retrievePinData(String imagePath) async {
-    final prefs = await SharedPreferences.getInstance();
-    final key = "pins_$imagePath";
-    List<String> storedPins = prefs.getStringList(key) ?? [];
-    return storedPins.map((pin) => PinData.fromMap(jsonDecode(pin))).toList();
-  }
-
-  Future<void> deletePinData(String imagePath, PinData pin) async {
-    final prefs = await SharedPreferences.getInstance();
-    final key = "pins_$imagePath";
-    List<String> storedPins = prefs.getStringList(key) ?? [];
-
-    // Find and remove the pin data from storedPins
-    String pinJson = jsonEncode(pin.toMap());
-    storedPins.remove(pinJson);
-
-    await prefs.setStringList(key, storedPins);
-  }
-
-  void showOwnersOnly() {
-    setState(() {
-      displayedPins = pinsData
-          .where((pin) => pin.selectedItems.contains('Owners'))
-          .toList();
-    });
-  }
-
-  void showRiderOnly() {
-    setState(() {
-      displayedPins = pinsData
-          .where((pin) => pin.selectedItems.contains('Renter'))
-          .toList();
-    });
-  }
-
-  void showPaidOnly() {
-    setState(() {
-      displayedPins =
-          pinsData.where((pin) => pin.selectedItems.contains('Paid')).toList();
-    });
-  }
-
-  void showUnpaidOnly() {
-    setState(() {
-      displayedPins = pinsData
-          .where((pin) => pin.selectedItems.contains('Unpaid'))
-          .toList();
-    });
-  }
-
-  void showkidsOnly() {
-    setState(() {
-      displayedPins =
-          pinsData.where((pin) => pin.selectedItems.contains('kids')).toList();
-    });
-  }
-
-  void showDogOnly() {
-    setState(() {
-      displayedPins =
-          pinsData.where((pin) => pin.selectedItems.contains('Dog')).toList();
-    });
-  }
-
-  void showPoolOnly() {
-    setState(() {
-      displayedPins =
-          pinsData.where((pin) => pin.selectedItems.contains('Pool')).toList();
-    });
-  }
-
-  void showAllPins() {
-    setState(() {
-      displayedPins = List.from(pinsData);
-    });
-  }
-
-  void hideAllPins() {
-    setState(() {
-      displayedPins.clear();
-    });
-  }
-
-// Add other filtering methods as needed
 
   @override
   void initState() {
@@ -130,7 +31,7 @@ class _ShowImageState extends State<ShowImage> {
     lastNameController = TextEditingController();
     addressController = TextEditingController();
     loadPins();
-    showAllPins();
+    context.read<PinDataNotifier>().showAllPins();
     WidgetsBinding.instance!.addPostFrameCallback((_) {
       setState(() {
         imagePath = ModalRoute.of(context)!.settings.arguments as String;
@@ -142,14 +43,12 @@ class _ShowImageState extends State<ShowImage> {
   Future<void> _showPinForm({PinData? pinData}) async {
     List<String> selectedItems = [];
     if (pinData != null) {
-      // If pin data is passed, populate the fields
       firstNameController.text = pinData.firstName;
       lastNameController.text = pinData.lastName;
       addressController.text = pinData.address;
       pinColor = pinData.pinColor;
       selectedItems = pinData.selectedItems;
     } else {
-      // Else, clear the fields
       firstNameController.clear();
       lastNameController.clear();
       addressController.clear();
@@ -158,6 +57,7 @@ class _ShowImageState extends State<ShowImage> {
     return await showDialog(
       context: context,
       builder: (BuildContext context) {
+        final pinNotifier = context.watch<PinDataNotifier>();
         return AlertDialog(
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -176,7 +76,7 @@ class _ShowImageState extends State<ShowImage> {
               ),
               Wrap(
                 direction: Axis.horizontal,
-                spacing: 8.0,
+                spacing: 24.0,
                 runSpacing: 4.0,
                 children: [
                   CustomCheckbox(
@@ -221,7 +121,7 @@ class _ShowImageState extends State<ShowImage> {
                   ),
                   CustomCheckbox(
                     title: 'Dog',
-                    color: Color.fromARGB(255, 82, 51, 40),
+                    color: const Color.fromARGB(255, 82, 51, 40),
                     value: selectedItems.contains('Dog'),
                     onChanged: (value) {
                       handleCheckboxChange(value, 'Dog', selectedItems);
@@ -241,7 +141,7 @@ class _ShowImageState extends State<ShowImage> {
                 onPressed: () async {
                   Color chosenPinColor;
                   if (selectedItems.contains('Owners')) {
-                    chosenPinColor = Color.fromARGB(255, 4, 95, 7);
+                    chosenPinColor = const Color.fromARGB(255, 4, 95, 7);
                   } else if (selectedItems.contains('Renter')) {
                     chosenPinColor = Colors.red;
                   } else if (selectedItems.contains('Paid')) {
@@ -251,7 +151,7 @@ class _ShowImageState extends State<ShowImage> {
                   } else if (selectedItems.contains('kids')) {
                     chosenPinColor = Colors.black;
                   } else if (selectedItems.contains('Dog')) {
-                    chosenPinColor = Color.fromARGB(255, 82, 51, 40);
+                    chosenPinColor = const Color.fromARGB(255, 109, 76, 64);
                   } else if (selectedItems.contains('Pool')) {
                     chosenPinColor = Colors.blue;
                   } else {
@@ -265,31 +165,29 @@ class _ShowImageState extends State<ShowImage> {
                     pinColor: chosenPinColor,
                     selectedItems: selectedItems,
                   );
-                  await savePinData(imagePath!, pinData);
-                  setState(() {
-                    pinsData.add(pinData);
-                    displayedPins.add(pinData);
-                  });
+                  await context
+                      .read<PinDataNotifier>()
+                      .savePinData(imagePath!, pinData);
+                  context.read<PinDataNotifier>().addPin(pinData);
+                  pinNotifier.displayedPins;
                   Navigator.of(context).pop();
                 },
-                child: Text('Submit'),
+                child: const Text('Submit'),
               ),
-              if (pinData != null) // Conditional rendering of the delete button
+              if (pinData != null)
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
                     onPressed: () async {
-                      await deletePinData(imagePath!, pinData);
-                      setState(() {
-                        pinsData.remove(pinData);
-                        displayedPins.remove(pinData);
-                      });
+                      await context
+                          .read<PinDataNotifier>()
+                          .deletePin(imagePath!, pinData);
                       Navigator.of(context).pop();
                     },
                     child: Text('Delete'),
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
-                      backgroundColor: Colors.red, // Foreground color
+                      backgroundColor: Colors.red,
                     ),
                   ),
                 ),
@@ -310,28 +208,30 @@ class _ShowImageState extends State<ShowImage> {
   }
 
   String getColorNameFromColor(Color color) {
-    if (color == Color.fromARGB(255, 4, 95, 7)) return 'Owners';
+    if (color == const Color.fromARGB(255, 4, 95, 7)) return 'Owners';
     if (color == Colors.red) return 'Renter';
     if (color == Colors.green) return 'Paid';
     if (color == Colors.black38) return 'Unpaid';
     if (color == Colors.black) return 'kids';
-    if (color == Color.fromARGB(255, 82, 51, 40)) return 'Dog';
+    if (color == const Color.fromARGB(255, 82, 51, 40)) return 'Dog';
     if (color == Colors.blue) return 'Pool';
-    return 'Qwners'; // default
+    return 'Qwners'; //default
   }
 
   void loadPins() async {
-    final pins = await retrievePinData(imagePath!);
+    final pins =
+        await context.read<PinDataNotifier>().retrievePinData(imagePath!);
     setState(() {
-      pinsData =
-          pins; // pinsData should be a List<PinData> defined in your state class.
+      pinsData = pins;
     });
+    context.read<PinDataNotifier>().loadPins(pins);
   }
 
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+    final pinNotifier = context.watch<PinDataNotifier>();
     final imagePath = ModalRoute.of(context)!.settings.arguments as String;
 
     return Scaffold(
@@ -360,13 +260,14 @@ class _ShowImageState extends State<ShowImage> {
                     Row(
                       children: [
                         GestureDetector(
-                          onTap: showAllPins,
-                          child: Text(
+                          onTap: () =>
+                              context.read<PinDataNotifier>().showAllPins(),
+                          child: const Text(
                             "Summary Pins",
                             style: TextStyle(fontSize: 14),
                           ),
                         ),
-                        Expanded(
+                        const Expanded(
                           child: Icon(
                             Icons.location_pin,
                             size: 15,
@@ -375,7 +276,8 @@ class _ShowImageState extends State<ShowImage> {
                       ],
                     ),
                     GestureDetector(
-                      onTap: hideAllPins,
+                      onTap: () =>
+                          context.read<PinDataNotifier>().hideAllPins(),
                       child: const Text(
                         "Hide All Pins",
                         style: TextStyle(fontSize: 14),
@@ -383,8 +285,9 @@ class _ShowImageState extends State<ShowImage> {
                     ),
                     Expanded(child: Container()),
                     GestureDetector(
-                      onTap: showOwnersOnly,
-                      child: Text(
+                      onTap: () =>
+                          context.read<PinDataNotifier>().showOwnersOnly(),
+                      child: const Text(
                         " Owners",
                         style: TextStyle(
                             fontSize: 13, color: Color.fromARGB(255, 4, 95, 7)),
@@ -394,8 +297,9 @@ class _ShowImageState extends State<ShowImage> {
                       height: screenHeight * 0.005,
                     ),
                     GestureDetector(
-                      onTap: showRiderOnly,
-                      child: Text(
+                      onTap: () =>
+                          context.read<PinDataNotifier>().showRiderOnly(),
+                      child: const Text(
                         " Renter",
                         style: TextStyle(fontSize: 13, color: Colors.red),
                       ),
@@ -404,8 +308,9 @@ class _ShowImageState extends State<ShowImage> {
                       height: screenHeight * 0.005,
                     ),
                     GestureDetector(
-                      onTap: showPaidOnly,
-                      child: Text(
+                      onTap: () =>
+                          context.read<PinDataNotifier>().showPaidOnly(),
+                      child: const Text(
                         " Paid",
                         style: TextStyle(fontSize: 13, color: Colors.green),
                       ),
@@ -414,8 +319,9 @@ class _ShowImageState extends State<ShowImage> {
                       height: screenHeight * 0.005,
                     ),
                     GestureDetector(
-                      onTap: showUnpaidOnly,
-                      child: Text(
+                      onTap: () =>
+                          context.read<PinDataNotifier>().showUnpaidOnly(),
+                      child: const Text(
                         " Unpaid",
                         style: TextStyle(fontSize: 13, color: Colors.black38),
                       ),
@@ -424,8 +330,9 @@ class _ShowImageState extends State<ShowImage> {
                       height: screenHeight * 0.005,
                     ),
                     GestureDetector(
-                      onTap: showkidsOnly,
-                      child: Text(
+                      onTap: () =>
+                          context.read<PinDataNotifier>().showkidsOnly(),
+                      child: const Text(
                         " kids",
                         style: TextStyle(fontSize: 13, color: Colors.black),
                       ),
@@ -433,7 +340,7 @@ class _ShowImageState extends State<ShowImage> {
                     SizedBox(
                       height: screenHeight * 0.005,
                     ),
-                    Text(
+                    const Text(
                       "------",
                       style: TextStyle(fontSize: 17, color: Colors.green),
                     ),
@@ -441,20 +348,22 @@ class _ShowImageState extends State<ShowImage> {
                       height: screenHeight * 0.005,
                     ),
                     GestureDetector(
-                      onTap: showDogOnly,
-                      child: Text(
+                      onTap: () =>
+                          context.read<PinDataNotifier>().showDogOnly(),
+                      child: const Text(
                         " Dog",
                         style: TextStyle(
                             fontSize: 13,
-                            color: const Color.fromARGB(255, 82, 51, 40)),
+                            color: Color.fromARGB(255, 82, 51, 40)),
                       ),
                     ),
                     SizedBox(
                       height: screenHeight * 0.005,
                     ),
                     GestureDetector(
-                      onTap: showPoolOnly,
-                      child: Text(
+                      onTap: () =>
+                          context.read<PinDataNotifier>().showPoolOnly(),
+                      child: const Text(
                         " Pool",
                         style: TextStyle(fontSize: 13, color: Colors.green),
                       ),
@@ -473,8 +382,6 @@ class _ShowImageState extends State<ShowImage> {
                   Offset clickedPosition =
                       renderBox.globalToLocal(details.globalPosition);
                   PinData? clickedPinData;
-
-                  // Check if clicked near any existing pin
                   for (PinData pinData in pinsData) {
                     if ((pinData.position.dx - clickedPosition.dx).abs() < 10 &&
                         (pinData.position.dy - clickedPosition.dy).abs() < 10) {
@@ -484,7 +391,6 @@ class _ShowImageState extends State<ShowImage> {
                       break;
                     }
                   }
-
                   if (clickedPinData != null) {
                     // Fill the form with the data of the clicked pin
                     firstNameController.text = clickedPinData.firstName;
@@ -492,7 +398,6 @@ class _ShowImageState extends State<ShowImage> {
                     addressController.text = clickedPinData.address;
                     pinColor = clickedPinData.pinColor;
                   } else {
-                    // Clear the form for a new pin
                     firstNameController.clear();
                     lastNameController.clear();
                     addressController.clear();
@@ -514,13 +419,12 @@ class _ShowImageState extends State<ShowImage> {
                         key: imageKey,
                       ),
                     ),
-                    ...displayedPins.map((pin) {
+                    ...pinNotifier.displayedPins.map((pin) {
                       return Positioned(
                         top: pin.position.dy,
                         left: pin.position.dx,
                         child: InkWell(
                           onTap: () async {
-                            // Display pin's data using a dialog, bottom sheet, or any other method.
                             await _showPinForm(pinData: pin);
                           },
                           child: Icon(
