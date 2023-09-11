@@ -1,10 +1,14 @@
-import 'dart:typed_data';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-class UploadPage extends StatelessWidget {
+class UploadPage extends StatefulWidget {
+  @override
+  _UploadPageState createState() => _UploadPageState();
+}
+
+class _UploadPageState extends State<UploadPage> {
+  String? _lastSelectedImagePath;
+
   Future<void> _pickImage(BuildContext context) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -13,7 +17,22 @@ class UploadPage extends StatelessWidget {
 
     if (result != null) {
       String imagePath = result.files.single.path!;
-      Navigator.pushNamed(context, '/showimage', arguments: imagePath);
+      setState(() {
+        _lastSelectedImagePath = imagePath;
+      });
+      // ignore: use_build_context_synchronously
+      await Navigator.pushNamed(context, '/showimage', arguments: imagePath);
+    }
+  }
+
+  void _openLastSelectedImage(BuildContext context) async {
+    if (_lastSelectedImagePath != null) {
+      await Navigator.pushNamed(context, '/showimage',
+          arguments: _lastSelectedImagePath);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No image was previously selected!')),
+      );
     }
   }
 
@@ -37,7 +56,7 @@ class UploadPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                height: screenHeight * 0.4,
+                height: screenHeight * 0.5,
                 width: screenWidth * 0.3,
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.7),
@@ -66,6 +85,13 @@ class UploadPage extends StatelessWidget {
                         _pickImage(context);
                       },
                       child: Text("Select file to upload"),
+                    ),
+                    SizedBox(height: screenHeight * 0.02),
+                    ElevatedButton(
+                      onPressed: () {
+                        _openLastSelectedImage(context);
+                      },
+                      child: Text("Open last selected image"),
                     ),
                   ],
                 ),

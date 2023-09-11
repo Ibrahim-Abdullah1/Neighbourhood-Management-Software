@@ -14,6 +14,17 @@ class ShowImage extends StatefulWidget {
 }
 
 class _ShowImageState extends State<ShowImage> {
+  List<String> _titles = [
+    'Owners',
+    'Renter',
+    'Paid',
+    'Unpaid',
+    'kids',
+    'Dog',
+    'Pool'
+  ]; // Default titles
+  final TextEditingController _controller = TextEditingController();
+
   List<PinData> displayedPins = [];
   String? imagePath;
   Offset? latestTappedPosition;
@@ -22,7 +33,20 @@ class _ShowImageState extends State<ShowImage> {
   Color pinColor = Colors.blue;
   late TextEditingController firstNameController,
       lastNameController,
-      addressController;
+      addressController,
+      SpouseController,
+      StreetController,
+      EmailController,
+      CellPhoneController,
+      KidsnameController,
+      HisWorkController,
+      HerWorkController,
+      ChurchController,
+      HobbiesController,
+      EthnicityController,
+      GroupsController,
+      SkillsController,
+      SocialMediaController;
 
   @override
   void initState() {
@@ -30,6 +54,19 @@ class _ShowImageState extends State<ShowImage> {
     firstNameController = TextEditingController();
     lastNameController = TextEditingController();
     addressController = TextEditingController();
+    SpouseController = TextEditingController();
+    StreetController = TextEditingController();
+    EmailController = TextEditingController();
+    CellPhoneController = TextEditingController();
+    KidsnameController = TextEditingController();
+    HisWorkController = TextEditingController();
+    HerWorkController = TextEditingController();
+    ChurchController = TextEditingController();
+    HobbiesController = TextEditingController();
+    EthnicityController = TextEditingController();
+    GroupsController = TextEditingController();
+    SkillsController = TextEditingController();
+    SocialMediaController = TextEditingController();
     loadPins();
     context.read<PinDataNotifier>().showAllPins();
     WidgetsBinding.instance!.addPostFrameCallback((_) {
@@ -62,80 +99,170 @@ class _ShowImageState extends State<ShowImage> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextFormField(
-                controller: firstNameController,
-                decoration: InputDecoration(labelText: 'First Name'),
+              Container(
+                height: MediaQuery.of(context).size.height * 0.1,
+                width: MediaQuery.of(context).size.width * 0.45,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      child: TextFormField(
+                        controller: firstNameController,
+                        decoration: InputDecoration(labelText: 'First Name'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.008,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      child: TextFormField(
+                        controller: lastNameController,
+                        decoration: InputDecoration(labelText: 'Last Name'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.008,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      child: TextFormField(
+                        controller: SpouseController,
+                        decoration: InputDecoration(labelText: 'Spouse'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.008,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      child: TextFormField(
+                        controller: StreetController,
+                        decoration: InputDecoration(labelText: 'Str Address'),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              TextFormField(
-                controller: lastNameController,
-                decoration: InputDecoration(labelText: 'Last Name'),
+              Container(
+                height: MediaQuery.of(context).size.height * 0.1,
+                width: MediaQuery.of(context).size.width * 0.45,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      child: TextFormField(
+                        controller: EmailController,
+                        decoration: InputDecoration(labelText: 'Email'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.008,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      child: TextFormField(
+                        controller: CellPhoneController,
+                        decoration: InputDecoration(labelText: 'Cell Phone'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.008,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      child: TextFormField(
+                        controller: KidsnameController,
+                        decoration: InputDecoration(labelText: 'Kids Name'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.008,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      child: TextFormField(
+                        controller: HisWorkController,
+                        decoration: InputDecoration(labelText: 'His Work'),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              TextFormField(
-                controller: addressController,
-                decoration: InputDecoration(labelText: 'Address'),
+              Container(
+                height: MediaQuery.of(context).size.height * 0.1,
+                width: MediaQuery.of(context).size.width * 0.45,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      child: TextFormField(
+                        controller: HerWorkController,
+                        decoration: InputDecoration(labelText: 'Her Work'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.008,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      child: TextFormField(
+                        controller: ChurchController,
+                        decoration: const InputDecoration(labelText: 'Church'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.008,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      child: TextFormField(
+                        controller: HobbiesController,
+                        decoration: InputDecoration(labelText: 'Hobbies'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.008,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      child: TextFormField(
+                        controller: HisWorkController,
+                        decoration: InputDecoration(labelText: 'Ethnicity'),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              Wrap(
-                direction: Axis.horizontal,
-                spacing: 24.0,
-                runSpacing: 4.0,
-                children: [
-                  CustomCheckbox(
-                    title: 'Owners',
-                    color: Color.fromARGB(255, 4, 95, 7),
-                    value: selectedItems.contains('Owners'),
-                    onChanged: (value) {
-                      handleCheckboxChange(value, 'Owners', selectedItems);
-                    },
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                height: MediaQuery.of(context).size.height * 0.38,
+                width: MediaQuery.of(context).size.width * 0.45,
+                child: Scrollbar(
+                  child: SingleChildScrollView(
+                    child: Wrap(
+                      direction: Axis.horizontal,
+                      runSpacing: 1.0,
+                      spacing: 3.0,
+                      children: _titles
+                          .map((title) => CustomCheckbox(
+                                title: title,
+                                color: Colors.blue, // or any default color
+                                value: selectedItems.contains(title),
+                                onChanged: (value) {
+                                  handleCheckboxChange(
+                                      value, title, selectedItems);
+                                },
+                              ))
+                          .toList(),
+                    ),
                   ),
-                  CustomCheckbox(
-                    title: 'Renter',
-                    color: Colors.red,
-                    value: selectedItems.contains('Renter'),
-                    onChanged: (value) {
-                      handleCheckboxChange(value, 'Renter', selectedItems);
-                    },
-                  ),
-                  CustomCheckbox(
-                    title: 'Paid',
-                    color: Colors.green,
-                    value: selectedItems.contains('Paid'),
-                    onChanged: (value) {
-                      handleCheckboxChange(value, 'Paid', selectedItems);
-                    },
-                  ),
-                  CustomCheckbox(
-                    title: 'Unpaid',
-                    color: Colors.black38,
-                    value: selectedItems.contains('Unpaid'),
-                    onChanged: (value) {
-                      handleCheckboxChange(value, 'Unpaid', selectedItems);
-                    },
-                  ),
-                  CustomCheckbox(
-                    title: 'kids',
-                    color: Colors.black,
-                    value: selectedItems.contains('kids'),
-                    onChanged: (value) {
-                      handleCheckboxChange(value, 'kids', selectedItems);
-                    },
-                  ),
-                  CustomCheckbox(
-                    title: 'Dog',
-                    color: const Color.fromARGB(255, 82, 51, 40),
-                    value: selectedItems.contains('Dog'),
-                    onChanged: (value) {
-                      handleCheckboxChange(value, 'Dog', selectedItems);
-                    },
-                  ),
-                  CustomCheckbox(
-                    title: 'Pool',
-                    color: Colors.blue,
-                    value: selectedItems.contains('Pool'),
-                    onChanged: (value) {
-                      handleCheckboxChange(value, 'Pool', selectedItems);
-                    },
-                  ),
-                ],
+                ),
               ),
               ElevatedButton(
                 onPressed: () async {
@@ -367,6 +494,44 @@ class _ShowImageState extends State<ShowImage> {
                         " Pool",
                         style: TextStyle(fontSize: 13, color: Colors.green),
                       ),
+                    ),
+                    SizedBox(
+                      height: screenHeight * 0.005,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Add Checkbox'),
+                            content: TextField(
+                              controller:
+                                  _controller, // _controller should be defined in your state
+                              decoration:
+                                  InputDecoration(hintText: "Enter title"),
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text('CANCEL'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              TextButton(
+                                child: Text('ADD'),
+                                onPressed: () {
+                                  setState(() {
+                                    _titles.add(_controller
+                                        .text); // _titles should be defined in your state as a list of string
+                                  });
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      child: Text('Add Checkbox'),
                     ),
                     SizedBox(
                       height: screenHeight * 0.1,

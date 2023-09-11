@@ -27,22 +27,26 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Checkbox(
-          value: currentValue,
-          onChanged: (bool? value) {
-            if (value != null) {
-              setState(() {
-                currentValue = value;
-              });
-              widget.onChanged(value);
-            }
-          },
-          activeColor: widget.color,
-        ),
-        Text(widget.title),
-      ],
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.09,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Checkbox(
+            value: currentValue,
+            onChanged: (bool? value) {
+              if (value != null) {
+                setState(() {
+                  currentValue = value;
+                });
+                widget.onChanged(value);
+              }
+            },
+            activeColor: widget.color,
+          ),
+          Text(widget.title),
+        ],
+      ),
     );
   }
 }
