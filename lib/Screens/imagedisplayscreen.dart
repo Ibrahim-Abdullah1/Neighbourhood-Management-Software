@@ -14,6 +14,7 @@ class ShowImage extends StatefulWidget {
 }
 
 class _ShowImageState extends State<ShowImage> {
+  List<String> customCheckboxes = [];
   List<String> _titles = [
     'Owners',
     'Renter',
@@ -26,6 +27,8 @@ class _ShowImageState extends State<ShowImage> {
   final TextEditingController _controller = TextEditingController();
 
   List<PinData> displayedPins = [];
+  String? selectedCategory;
+  List<String> availableCheckboxes = [];
   String? imagePath;
   Offset? latestTappedPosition;
   List<PinData> pinsData = [];
@@ -83,12 +86,27 @@ class _ShowImageState extends State<ShowImage> {
       firstNameController.text = pinData.firstName;
       lastNameController.text = pinData.lastName;
       addressController.text = pinData.address;
+      SpouseController.text = pinData.spouse;
+      StreetController.text = pinData.street;
+      EmailController.text = pinData.email;
+      CellPhoneController.text = pinData.cellPhone;
+      KidsnameController.text = pinData.kidsName;
+      HisWorkController.text = pinData.hisWork;
+      HerWorkController.text = pinData.herWork;
+      ChurchController.text = pinData.church;
+      HobbiesController.text = pinData.hobbies;
+      EthnicityController.text = pinData.ethnicity;
+      GroupsController.text = pinData.groups;
+      SkillsController.text = pinData.skills;
+      SocialMediaController.text = pinData.socialMedia;
       pinColor = pinData.pinColor;
       selectedItems = pinData.selectedItems;
     } else {
       firstNameController.clear();
       lastNameController.clear();
       addressController.clear();
+      SpouseController.clear();
+
       selectedItems.clear();
     }
     return await showDialog(
@@ -237,6 +255,42 @@ class _ShowImageState extends State<ShowImage> {
                   ],
                 ),
               ),
+              Container(
+                height: MediaQuery.of(context).size.height * 0.1,
+                width: MediaQuery.of(context).size.width * 0.45,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      child: TextFormField(
+                        controller: GroupsController,
+                        decoration: InputDecoration(labelText: 'Groups'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.008,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      child: TextFormField(
+                        controller: SkillsController,
+                        decoration: const InputDecoration(labelText: 'Skills'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.008,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      child: TextFormField(
+                        controller: SocialMediaController,
+                        decoration: InputDecoration(labelText: 'Social Media'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               SizedBox(
                 height: 10,
               ),
@@ -289,6 +343,20 @@ class _ShowImageState extends State<ShowImage> {
                     firstName: firstNameController.text,
                     lastName: lastNameController.text,
                     address: addressController.text,
+                    spouse: SpouseController.text,
+                    street: StreetController.text,
+                    email: EmailController.text,
+                    cellPhone: CellPhoneController.text,
+                    kidsName: KidsnameController.text,
+                    hisWork: HisWorkController.text,
+                    herWork: HerWorkController.text,
+                    church: ChurchController.text,
+                    hobbies: HobbiesController.text,
+                    ethnicity: EthnicityController.text,
+                    groups: GroupsController.text,
+                    skills: SkillsController.text,
+                    socialMedia: SocialMediaController.text,
+                    category: SocialMediaController.text,
                     pinColor: chosenPinColor,
                     selectedItems: selectedItems,
                   );
@@ -521,7 +589,8 @@ class _ShowImageState extends State<ShowImage> {
                                 child: Text('ADD'),
                                 onPressed: () {
                                   setState(() {
-                                    _titles.add(_controller
+                                    _titles.add(_controller.text);
+                                    customCheckboxes.add(_controller
                                         .text); // _titles should be defined in your state as a list of string
                                   });
                                   Navigator.of(context).pop();
