@@ -25,7 +25,12 @@ void main() {
   }
   runApp(
     ChangeNotifierProvider(
-      create: (context) => PinDataNotifier(),
+      create: (context) {
+        PinDataNotifier();
+        final notifier = PinDataNotifier();
+        notifier.loadCheckboxes();
+        return notifier;
+      },
       child: MyApp(),
     ),
   );

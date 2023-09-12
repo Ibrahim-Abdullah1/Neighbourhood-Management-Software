@@ -14,18 +14,27 @@ class ShowImage extends StatefulWidget {
 }
 
 class _ShowImageState extends State<ShowImage> {
-  List<String> customCheckboxes = [];
-  List<String> _titles = [
-    'Owners',
-    'Renter',
-    'Paid',
-    'Unpaid',
-    'kids',
-    'Dog',
-    'Pool'
-  ]; // Default titles
-  final TextEditingController _controller = TextEditingController();
+  TextEditingController _categoryController = TextEditingController();
+  TextEditingController _controller = TextEditingController();
+  List<String> _titles = [];
+  Map<String, List<String>> _categories = {
+    'Human Terrain': [
+      'Owners',
+      'Renter',
+      'Paid',
+      'Unpaid',
+      'kids',
+      'Dog',
+      'Pool'
+    ],
+    'Physical Terrain': [],
+    'Infrastructure': [],
+  };
+  String? _selectedCategory;
+  String? _selectedCheckbox;
 
+  Map<String, List<String>> selectedItemsByCategory = {};
+  List<String> customCheckboxes = [];
   List<PinData> displayedPins = [];
   String? selectedCategory;
   List<String> availableCheckboxes = [];
@@ -106,7 +115,18 @@ class _ShowImageState extends State<ShowImage> {
       lastNameController.clear();
       addressController.clear();
       SpouseController.clear();
-
+      StreetController.clear();
+      EmailController.clear();
+      CellPhoneController.clear();
+      KidsnameController.clear();
+      HisWorkController.clear();
+      HerWorkController.clear();
+      ChurchController.clear();
+      HobbiesController.clear();
+      EthnicityController.clear();
+      GroupsController.clear();
+      SkillsController.clear();
+      SocialMediaController.clear();
       selectedItems.clear();
     }
     return await showDialog(
@@ -173,7 +193,7 @@ class _ShowImageState extends State<ShowImage> {
                       width: MediaQuery.of(context).size.width * 0.1,
                       child: TextFormField(
                         controller: EmailController,
-                        decoration: InputDecoration(labelText: 'Email'),
+                        decoration: const InputDecoration(labelText: 'Email'),
                       ),
                     ),
                     SizedBox(
@@ -248,7 +268,7 @@ class _ShowImageState extends State<ShowImage> {
                     Container(
                       width: MediaQuery.of(context).size.width * 0.1,
                       child: TextFormField(
-                        controller: HisWorkController,
+                        controller: EthnicityController,
                         decoration: InputDecoration(labelText: 'Ethnicity'),
                       ),
                     ),
@@ -295,7 +315,7 @@ class _ShowImageState extends State<ShowImage> {
                 height: 10,
               ),
               Container(
-                height: MediaQuery.of(context).size.height * 0.38,
+                height: MediaQuery.of(context).size.height * 0.35,
                 width: MediaQuery.of(context).size.width * 0.45,
                 child: Scrollbar(
                   child: SingleChildScrollView(
@@ -358,6 +378,7 @@ class _ShowImageState extends State<ShowImage> {
                     socialMedia: SocialMediaController.text,
                     category: SocialMediaController.text,
                     pinColor: chosenPinColor,
+                    selectedItemsByCategory: _categories,
                     selectedItems: selectedItems,
                   );
                   await context
@@ -478,93 +499,87 @@ class _ShowImageState extends State<ShowImage> {
                         style: TextStyle(fontSize: 14),
                       ),
                     ),
-                    Expanded(child: Container()),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      "Catagories",
+                      style: TextStyle(fontSize: 18),
+                    ),
                     GestureDetector(
-                      onTap: () =>
-                          context.read<PinDataNotifier>().showOwnersOnly(),
+                      onTap: () {
+                        setState(() {
+                          _selectedCategory = "Human Terrain";
+                        });
+                      },
                       child: const Text(
-                        " Owners",
+                        " Human Terrian",
                         style: TextStyle(
-                            fontSize: 13, color: Color.fromARGB(255, 4, 95, 7)),
+                          fontSize: 13,
+                          color: Color.fromARGB(255, 4, 95, 7),
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     SizedBox(
-                      height: screenHeight * 0.005,
+                      height: 5,
                     ),
                     GestureDetector(
-                      onTap: () =>
-                          context.read<PinDataNotifier>().showRiderOnly(),
+                      onTap: () {
+                        setState(() {
+                          _selectedCategory = "Physical Terrain";
+                        });
+                      },
                       child: const Text(
-                        " Renter",
-                        style: TextStyle(fontSize: 13, color: Colors.red),
-                      ),
-                    ),
-                    SizedBox(
-                      height: screenHeight * 0.005,
-                    ),
-                    GestureDetector(
-                      onTap: () =>
-                          context.read<PinDataNotifier>().showPaidOnly(),
-                      child: const Text(
-                        " Paid",
-                        style: TextStyle(fontSize: 13, color: Colors.green),
-                      ),
-                    ),
-                    SizedBox(
-                      height: screenHeight * 0.005,
-                    ),
-                    GestureDetector(
-                      onTap: () =>
-                          context.read<PinDataNotifier>().showUnpaidOnly(),
-                      child: const Text(
-                        " Unpaid",
-                        style: TextStyle(fontSize: 13, color: Colors.black38),
-                      ),
-                    ),
-                    SizedBox(
-                      height: screenHeight * 0.005,
-                    ),
-                    GestureDetector(
-                      onTap: () =>
-                          context.read<PinDataNotifier>().showkidsOnly(),
-                      child: const Text(
-                        " kids",
-                        style: TextStyle(fontSize: 13, color: Colors.black),
-                      ),
-                    ),
-                    SizedBox(
-                      height: screenHeight * 0.005,
-                    ),
-                    const Text(
-                      "------",
-                      style: TextStyle(fontSize: 17, color: Colors.green),
-                    ),
-                    SizedBox(
-                      height: screenHeight * 0.005,
-                    ),
-                    GestureDetector(
-                      onTap: () =>
-                          context.read<PinDataNotifier>().showDogOnly(),
-                      child: const Text(
-                        " Dog",
+                        " Physical Terrian",
                         style: TextStyle(
                             fontSize: 13,
-                            color: Color.fromARGB(255, 82, 51, 40)),
+                            color: Color.fromARGB(255, 4, 95, 7),
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                     SizedBox(
-                      height: screenHeight * 0.005,
+                      height: 5,
                     ),
                     GestureDetector(
-                      onTap: () =>
-                          context.read<PinDataNotifier>().showPoolOnly(),
+                      onTap: () {
+                        setState(() {
+                          _selectedCategory = "Infrastructure";
+                        });
+                      },
                       child: const Text(
-                        " Pool",
-                        style: TextStyle(fontSize: 13, color: Colors.green),
+                        " Infrastructure",
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Color.fromARGB(255, 4, 95, 7),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Expanded(child: Container()),
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.45,
+                      child: ListView.builder(
+                        itemCount: _categories[_selectedCategory]?.length ?? 0,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              _selectedCheckbox =
+                                  _categories[_selectedCategory]![index];
+                              context.read<PinDataNotifier>().showCheckboxPins(
+                                  _categories[_selectedCategory]![index]);
+                            },
+                            child: ListTile(
+                              title:
+                                  Text(_categories[_selectedCategory]![index]),
+                              trailing: Icon(Icons.location_pin),
+                            ),
+                          );
+                        },
                       ),
                     ),
                     SizedBox(
-                      height: screenHeight * 0.005,
+                      height: screenHeight * 0.01,
                     ),
                     ElevatedButton(
                       onPressed: () {
@@ -572,11 +587,27 @@ class _ShowImageState extends State<ShowImage> {
                           context: context,
                           builder: (context) => AlertDialog(
                             title: Text('Add Checkbox'),
-                            content: TextField(
-                              controller:
-                                  _controller, // _controller should be defined in your state
-                              decoration:
-                                  InputDecoration(hintText: "Enter title"),
+                            content: Column(
+                              children: [
+                                DropdownButton<String>(
+                                  items: _categories.keys
+                                      .map((category) =>
+                                          DropdownMenuItem<String>(
+                                            value: category,
+                                            child: Text(category),
+                                          ))
+                                      .toList(),
+                                  onChanged: (String? newValue) {
+                                    _categoryController.text = newValue!;
+                                  },
+                                  hint: Text("Select a Category"),
+                                ),
+                                TextField(
+                                  controller: _controller,
+                                  decoration:
+                                      InputDecoration(hintText: "Enter title"),
+                                ),
+                              ],
                             ),
                             actions: <Widget>[
                               TextButton(
@@ -589,9 +620,12 @@ class _ShowImageState extends State<ShowImage> {
                                 child: Text('ADD'),
                                 onPressed: () {
                                   setState(() {
-                                    _titles.add(_controller.text);
-                                    customCheckboxes.add(_controller
-                                        .text); // _titles should be defined in your state as a list of string
+                                    if (_categoryController.text.isNotEmpty &&
+                                        _controller.text.isNotEmpty) {
+                                      _categories[_categoryController.text]!
+                                          .add(_controller.text);
+                                      _titles.add(_controller.text);
+                                    }
                                   });
                                   Navigator.of(context).pop();
                                 },
@@ -624,17 +658,6 @@ class _ShowImageState extends State<ShowImage> {
                           "Pin clicked at: ${pinData.position}"); // Debug statement
                       break;
                     }
-                  }
-                  if (clickedPinData != null) {
-                    // Fill the form with the data of the clicked pin
-                    firstNameController.text = clickedPinData.firstName;
-                    lastNameController.text = clickedPinData.lastName;
-                    addressController.text = clickedPinData.address;
-                    pinColor = clickedPinData.pinColor;
-                  } else {
-                    firstNameController.clear();
-                    lastNameController.clear();
-                    addressController.clear();
                   }
 
                   setState(() {

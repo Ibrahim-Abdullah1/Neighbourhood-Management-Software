@@ -28,7 +28,7 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.09,
+      width: MediaQuery.of(context).size.width * 0.13,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [

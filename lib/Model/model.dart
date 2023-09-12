@@ -21,6 +21,7 @@ class PinData {
   String category;
   Color pinColor;
   List<String> selectedItems;
+  Map<String, List<String>> selectedItemsByCategory;
 
   PinData({
     required this.position,
@@ -43,6 +44,7 @@ class PinData {
     required this.category,
     required this.pinColor,
     required this.selectedItems,
+    required this.selectedItemsByCategory,
   });
 
   Map<String, dynamic> toMap() {
@@ -68,6 +70,7 @@ class PinData {
       'category': category,
       'pinColor': pinColor.value, // storing the int value of the color
       'selectedItems': selectedItems,
+      'selectedItemsByCategory': selectedItemsByCategory,
     };
   }
 
@@ -97,6 +100,8 @@ class PinData {
           ? map['pinColor']
           : int.parse(map['pinColor'].toString())),
       selectedItems: List<String>.from(map['selectedItems']),
+      selectedItemsByCategory:
+          Map<String, List<String>>.from(map['selectedItemsByCategory']),
     );
   }
 }
