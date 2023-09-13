@@ -18,15 +18,7 @@ class _ShowImageState extends State<ShowImage> {
   TextEditingController _controller = TextEditingController();
   List<String> _titles = [];
   Map<String, List<String>> _categories = {
-    'Human Terrain': [
-      'Owners',
-      'Renter',
-      'Paid',
-      'Unpaid',
-      'kids',
-      'Dog',
-      'Pool'
-    ],
+    'Human Terrain': [],
     'Physical Terrain': [],
     'Infrastructure': [],
   };
@@ -315,7 +307,7 @@ class _ShowImageState extends State<ShowImage> {
                 height: 10,
               ),
               Container(
-                height: MediaQuery.of(context).size.height * 0.35,
+                height: MediaQuery.of(context).size.height * 0.30,
                 width: MediaQuery.of(context).size.width * 0.45,
                 child: Scrollbar(
                   child: SingleChildScrollView(
@@ -323,17 +315,18 @@ class _ShowImageState extends State<ShowImage> {
                       direction: Axis.horizontal,
                       runSpacing: 1.0,
                       spacing: 3.0,
-                      children: _titles
-                          .map((title) => CustomCheckbox(
-                                title: title,
-                                color: Colors.blue, // or any default color
-                                value: selectedItems.contains(title),
-                                onChanged: (value) {
-                                  handleCheckboxChange(
-                                      value, title, selectedItems);
-                                },
-                              ))
-                          .toList(),
+                      children: _categories.entries.expand((entry) {
+                        // For each category, map over its checkboxes
+                        return entry.value.map((title) => CustomCheckbox(
+                              title: title,
+                              color: Colors.blue, // or any default color
+                              value: selectedItems.contains(title),
+                              onChanged: (value) {
+                                handleCheckboxChange(
+                                    value, title, selectedItems);
+                              },
+                            ));
+                      }).toList(),
                     ),
                   ),
                 ),
@@ -619,15 +612,33 @@ class _ShowImageState extends State<ShowImage> {
                               TextButton(
                                 child: Text('ADD'),
                                 onPressed: () {
-                                  setState(() {
-                                    if (_categoryController.text.isNotEmpty &&
-                                        _controller.text.isNotEmpty) {
-                                      _categories[_categoryController.text]!
-                                          .add(_controller.text);
-                                      _titles.add(_controller.text);
+                                  if (_categoryController.text.isNotEmpty &&
+                                      _controller.text.isNotEmpty) {
+                                    if (!_categories[_categoryController.text]!
+                                        .contains(_controller.text)) {
+                                      setState(() {
+                                        _categories[_categoryController.text]!
+                                            .add(_controller.text);
+                                      });
+                                      Navigator.of(context).pop();
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                                  'Checkbox added successfully!')));
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                                  'Checkbox already exists in the selected category!')));
                                     }
-                                  });
-                                  Navigator.of(context).pop();
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                'Both fields are required!')));
+                                  }
+                                  _controller.clear();
+                                  _categoryController.clear();
                                 },
                               ),
                             ],
