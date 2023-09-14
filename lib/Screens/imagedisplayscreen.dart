@@ -25,6 +25,12 @@ class _ShowImageState extends State<ShowImage> {
   String? _selectedCategory;
   String? _selectedCheckbox;
 
+  Map<String, Color> _categoryColors = {
+    'Human Terrain': Colors.red,
+    'Physical Terrain': Colors.blue,
+    'Infrastructure': Colors.brown,
+  };
+
   Map<String, List<String>> selectedItemsByCategory = {};
   List<String> customCheckboxes = [];
   List<PinData> displayedPins = [];
@@ -50,7 +56,8 @@ class _ShowImageState extends State<ShowImage> {
       EthnicityController,
       GroupsController,
       SkillsController,
-      SocialMediaController;
+      SocialMediaController,
+      NotesController;
 
   @override
   void initState() {
@@ -70,7 +77,9 @@ class _ShowImageState extends State<ShowImage> {
     EthnicityController = TextEditingController();
     GroupsController = TextEditingController();
     SkillsController = TextEditingController();
+    NotesController = TextEditingController();
     SocialMediaController = TextEditingController();
+    NotesController = TextEditingController();
     loadPins();
     context.read<PinDataNotifier>().showAllPins();
     WidgetsBinding.instance!.addPostFrameCallback((_) {
@@ -99,6 +108,7 @@ class _ShowImageState extends State<ShowImage> {
       EthnicityController.text = pinData.ethnicity;
       GroupsController.text = pinData.groups;
       SkillsController.text = pinData.skills;
+      NotesController.text = pinData.notes;
       SocialMediaController.text = pinData.socialMedia;
       pinColor = pinData.pinColor;
       selectedItems = pinData.selectedItems;
@@ -119,6 +129,7 @@ class _ShowImageState extends State<ShowImage> {
       GroupsController.clear();
       SkillsController.clear();
       SocialMediaController.clear();
+      NotesController.clear();
       selectedItems.clear();
     }
     return await showDialog(
@@ -126,281 +137,297 @@ class _ShowImageState extends State<ShowImage> {
       builder: (BuildContext context) {
         final pinNotifier = context.watch<PinDataNotifier>();
         return AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height * 0.1,
-                width: MediaQuery.of(context).size.width * 0.45,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      child: TextFormField(
-                        controller: firstNameController,
-                        decoration: InputDecoration(labelText: 'First Name'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.1,
+                  width: MediaQuery.of(context).size.width * 0.45,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        child: TextFormField(
+                          controller: firstNameController,
+                          decoration: InputDecoration(labelText: 'First Name'),
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.008,
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      child: TextFormField(
-                        controller: lastNameController,
-                        decoration: InputDecoration(labelText: 'Last Name'),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.008,
                       ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.008,
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      child: TextFormField(
-                        controller: SpouseController,
-                        decoration: InputDecoration(labelText: 'Spouse'),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        child: TextFormField(
+                          controller: lastNameController,
+                          decoration: InputDecoration(labelText: 'Last Name'),
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.008,
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      child: TextFormField(
-                        controller: StreetController,
-                        decoration: InputDecoration(labelText: 'Str Address'),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.008,
                       ),
-                    ),
-                  ],
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        child: TextFormField(
+                          controller: SpouseController,
+                          decoration: InputDecoration(labelText: 'Spouse'),
+                        ),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.008,
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        child: TextFormField(
+                          controller: StreetController,
+                          decoration: InputDecoration(labelText: 'Str Address'),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.1,
-                width: MediaQuery.of(context).size.width * 0.45,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      child: TextFormField(
-                        controller: EmailController,
-                        decoration: const InputDecoration(labelText: 'Email'),
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.1,
+                  width: MediaQuery.of(context).size.width * 0.45,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        child: TextFormField(
+                          controller: EmailController,
+                          decoration: const InputDecoration(labelText: 'Email'),
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.008,
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      child: TextFormField(
-                        controller: CellPhoneController,
-                        decoration: InputDecoration(labelText: 'Cell Phone'),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.008,
                       ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.008,
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      child: TextFormField(
-                        controller: KidsnameController,
-                        decoration: InputDecoration(labelText: 'Kids Name'),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        child: TextFormField(
+                          controller: CellPhoneController,
+                          decoration: InputDecoration(labelText: 'Cell Phone'),
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.008,
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      child: TextFormField(
-                        controller: HisWorkController,
-                        decoration: InputDecoration(labelText: 'His Work'),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.008,
                       ),
-                    ),
-                  ],
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        child: TextFormField(
+                          controller: KidsnameController,
+                          decoration: InputDecoration(labelText: 'Kids Name'),
+                        ),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.008,
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        child: TextFormField(
+                          controller: HisWorkController,
+                          decoration: InputDecoration(labelText: 'His Work'),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.1,
-                width: MediaQuery.of(context).size.width * 0.45,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      child: TextFormField(
-                        controller: HerWorkController,
-                        decoration: InputDecoration(labelText: 'Her Work'),
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.1,
+                  width: MediaQuery.of(context).size.width * 0.45,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        child: TextFormField(
+                          controller: HerWorkController,
+                          decoration: InputDecoration(labelText: 'Her Work'),
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.008,
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      child: TextFormField(
-                        controller: ChurchController,
-                        decoration: const InputDecoration(labelText: 'Church'),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.008,
                       ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.008,
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      child: TextFormField(
-                        controller: HobbiesController,
-                        decoration: InputDecoration(labelText: 'Hobbies'),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        child: TextFormField(
+                          controller: ChurchController,
+                          decoration:
+                              const InputDecoration(labelText: 'Church'),
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.008,
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      child: TextFormField(
-                        controller: EthnicityController,
-                        decoration: InputDecoration(labelText: 'Ethnicity'),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.008,
                       ),
-                    ),
-                  ],
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        child: TextFormField(
+                          controller: HobbiesController,
+                          decoration: InputDecoration(labelText: 'Hobbies'),
+                        ),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.008,
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        child: TextFormField(
+                          controller: EthnicityController,
+                          decoration: InputDecoration(labelText: 'Ethnicity'),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.1,
-                width: MediaQuery.of(context).size.width * 0.45,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      child: TextFormField(
-                        controller: GroupsController,
-                        decoration: InputDecoration(labelText: 'Groups'),
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.1,
+                  width: MediaQuery.of(context).size.width * 0.45,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        child: TextFormField(
+                          controller: GroupsController,
+                          decoration: InputDecoration(labelText: 'Groups'),
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.008,
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      child: TextFormField(
-                        controller: SkillsController,
-                        decoration: const InputDecoration(labelText: 'Skills'),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.008,
                       ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.008,
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      child: TextFormField(
-                        controller: SocialMediaController,
-                        decoration: InputDecoration(labelText: 'Social Media'),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        child: TextFormField(
+                          controller: SkillsController,
+                          decoration:
+                              const InputDecoration(labelText: 'Skills'),
+                        ),
                       ),
-                    ),
-                  ],
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.008,
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.1,
+                        child: TextFormField(
+                          controller: SocialMediaController,
+                          decoration:
+                              InputDecoration(labelText: 'Social Media'),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.30,
-                width: MediaQuery.of(context).size.width * 0.45,
-                child: Scrollbar(
-                  child: SingleChildScrollView(
-                    child: Wrap(
-                      direction: Axis.horizontal,
-                      runSpacing: 1.0,
-                      spacing: 3.0,
-                      children: _categories.entries.expand((entry) {
-                        // For each category, map over its checkboxes
-                        return entry.value.map((title) => CustomCheckbox(
-                              title: title,
-                              color: Colors.blue, // or any default color
-                              value: selectedItems.contains(title),
-                              onChanged: (value) {
-                                handleCheckboxChange(
-                                    value, title, selectedItems);
-                              },
-                            ));
-                      }).toList(),
+                const SizedBox(
+                  height: 10,
+                ),
+                TextField(
+                  controller: NotesController,
+                  maxLines: 2,
+                  decoration: const InputDecoration(
+                    labelText: "Notes",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.20,
+                  width: MediaQuery.of(context).size.width * 0.45,
+                  child: Scrollbar(
+                    child: SingleChildScrollView(
+                      child: Wrap(
+                        direction: Axis.horizontal,
+                        runSpacing: 1.0,
+                        spacing: 3.0,
+                        children: _categories.entries.expand((entry) {
+                          // Get the color associated with the category
+                          Color categoryColor = _categoryColors[entry.key] ??
+                              Colors.grey; // Default to grey if not found
+                          // For each category, map over its checkboxes
+                          return entry.value.map((title) => CustomCheckbox(
+                                title: title,
+                                color: categoryColor, // Use the category color
+                                value: selectedItems.contains(title),
+                                onChanged: (value) {
+                                  handleCheckboxChange(
+                                      value, title, selectedItems);
+                                },
+                              ));
+                        }).toList(),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  Color chosenPinColor;
-                  if (selectedItems.contains('Owners')) {
-                    chosenPinColor = const Color.fromARGB(255, 4, 95, 7);
-                  } else if (selectedItems.contains('Renter')) {
-                    chosenPinColor = Colors.red;
-                  } else if (selectedItems.contains('Paid')) {
-                    chosenPinColor = Colors.green;
-                  } else if (selectedItems.contains('Unpaid')) {
-                    chosenPinColor = Colors.black38;
-                  } else if (selectedItems.contains('kids')) {
-                    chosenPinColor = Colors.black;
-                  } else if (selectedItems.contains('Dog')) {
-                    chosenPinColor = const Color.fromARGB(255, 109, 76, 64);
-                  } else if (selectedItems.contains('Pool')) {
-                    chosenPinColor = Colors.blue;
-                  } else {
-                    chosenPinColor = Colors.deepOrangeAccent;
-                  }
-                  final pinData = PinData(
-                    position: latestTappedPosition!,
-                    firstName: firstNameController.text,
-                    lastName: lastNameController.text,
-                    address: addressController.text,
-                    spouse: SpouseController.text,
-                    street: StreetController.text,
-                    email: EmailController.text,
-                    cellPhone: CellPhoneController.text,
-                    kidsName: KidsnameController.text,
-                    hisWork: HisWorkController.text,
-                    herWork: HerWorkController.text,
-                    church: ChurchController.text,
-                    hobbies: HobbiesController.text,
-                    ethnicity: EthnicityController.text,
-                    groups: GroupsController.text,
-                    skills: SkillsController.text,
-                    socialMedia: SocialMediaController.text,
-                    category: SocialMediaController.text,
-                    pinColor: chosenPinColor,
-                    selectedItemsByCategory: _categories,
-                    selectedItems: selectedItems,
-                  );
-                  await context
-                      .read<PinDataNotifier>()
-                      .savePinData(imagePath!, pinData);
-                  context.read<PinDataNotifier>().addPin(pinData);
-                  pinNotifier.displayedPins;
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Submit'),
-              ),
-              if (pinData != null)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      await context
-                          .read<PinDataNotifier>()
-                          .deletePin(imagePath!, pinData);
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('Delete'),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      backgroundColor: Colors.red,
+                ElevatedButton(
+                  onPressed: () async {
+                    Color chosenPinColor;
+                    if (selectedItems.any((item) =>
+                        _categories['Human Terrain']!.contains(item))) {
+                      chosenPinColor = Colors.red;
+                    } else if (selectedItems.any((item) =>
+                        _categories['Physical Terrain']!.contains(item))) {
+                      chosenPinColor = Colors.blue;
+                    } else if (selectedItems.any((item) =>
+                        _categories['Infrastructure']!.contains(item))) {
+                      chosenPinColor = Colors.brown;
+                    } else {
+                      chosenPinColor = Colors.deepOrangeAccent; // Default color
+                    }
+
+                    final pinData = PinData(
+                      position: latestTappedPosition!,
+                      firstName: firstNameController.text,
+                      lastName: lastNameController.text,
+                      address: addressController.text,
+                      spouse: SpouseController.text,
+                      street: StreetController.text,
+                      email: EmailController.text,
+                      cellPhone: CellPhoneController.text,
+                      kidsName: KidsnameController.text,
+                      hisWork: HisWorkController.text,
+                      herWork: HerWorkController.text,
+                      church: ChurchController.text,
+                      hobbies: HobbiesController.text,
+                      ethnicity: EthnicityController.text,
+                      groups: GroupsController.text,
+                      skills: SkillsController.text,
+                      socialMedia: SocialMediaController.text,
+                      category: SocialMediaController.text,
+                      notes: NotesController.text,
+                      pinColor: chosenPinColor,
+                      selectedItemsByCategory: _categories,
+                      selectedItems: selectedItems,
+                    );
+                    await context
+                        .read<PinDataNotifier>()
+                        .savePinData(imagePath!, pinData);
+                    context.read<PinDataNotifier>().addPin(pinData);
+                    pinNotifier.displayedPins;
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Submit'),
+                ),
+                if (pinData != null)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        await context
+                            .read<PinDataNotifier>()
+                            .deletePin(imagePath!, pinData);
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('Delete'),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.red,
+                      ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         );
       },
@@ -414,17 +441,6 @@ class _ShowImageState extends State<ShowImage> {
     } else {
       selectedItems.remove(item);
     }
-  }
-
-  String getColorNameFromColor(Color color) {
-    if (color == const Color.fromARGB(255, 4, 95, 7)) return 'Owners';
-    if (color == Colors.red) return 'Renter';
-    if (color == Colors.green) return 'Paid';
-    if (color == Colors.black38) return 'Unpaid';
-    if (color == Colors.black) return 'kids';
-    if (color == const Color.fromARGB(255, 82, 51, 40)) return 'Dog';
-    if (color == Colors.blue) return 'Pool';
-    return 'Qwners'; //default
   }
 
   void loadPins() async {
@@ -499,6 +515,9 @@ class _ShowImageState extends State<ShowImage> {
                       "Catagories",
                       style: TextStyle(fontSize: 18),
                     ),
+                    SizedBox(
+                      height: 5,
+                    ),
                     GestureDetector(
                       onTap: () {
                         setState(() {
@@ -509,7 +528,7 @@ class _ShowImageState extends State<ShowImage> {
                         " Human Terrian",
                         style: TextStyle(
                           fontSize: 13,
-                          color: Color.fromARGB(255, 4, 95, 7),
+                          color: Colors.red,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -527,7 +546,7 @@ class _ShowImageState extends State<ShowImage> {
                         " Physical Terrian",
                         style: TextStyle(
                             fontSize: 13,
-                            color: Color.fromARGB(255, 4, 95, 7),
+                            color: Colors.blue,
                             fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -544,7 +563,7 @@ class _ShowImageState extends State<ShowImage> {
                         " Infrastructure",
                         style: TextStyle(
                           fontSize: 13,
-                          color: Color.fromARGB(255, 4, 95, 7),
+                          color: Colors.brown,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -583,17 +602,33 @@ class _ShowImageState extends State<ShowImage> {
                             content: Column(
                               children: [
                                 DropdownButton<String>(
-                                  items: _categories.keys
-                                      .map((category) =>
-                                          DropdownMenuItem<String>(
-                                            value: category,
-                                            child: Text(category),
-                                          ))
-                                      .toList(),
+                                  value: context
+                                          .watch<PinDataNotifier>()
+                                          .selectedCategory
+                                          .isEmpty
+                                      ? null
+                                      : context
+                                          .watch<PinDataNotifier>()
+                                          .selectedCategory,
+                                  items: _categories.keys.map((category) {
+                                    return DropdownMenuItem<String>(
+                                      value: category,
+                                      child: Text(category),
+                                    );
+                                  }).toList(),
                                   onChanged: (String? newValue) {
-                                    _categoryController.text = newValue!;
+                                    context
+                                        .read<PinDataNotifier>()
+                                        .selectedCategory = newValue!;
                                   },
-                                  hint: Text("Select a Category"),
+                                  hint: context
+                                          .watch<PinDataNotifier>()
+                                          .selectedCategory
+                                          .isEmpty
+                                      ? Text("Select a Category")
+                                      : Text(context
+                                          .watch<PinDataNotifier>()
+                                          .selectedCategory),
                                 ),
                                 TextField(
                                   controller: _controller,

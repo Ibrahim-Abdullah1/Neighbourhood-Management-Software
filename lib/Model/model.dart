@@ -19,6 +19,7 @@ class PinData {
   String skills;
   String socialMedia;
   String category;
+  String notes;
   Color pinColor;
   List<String> selectedItems;
   Map<String, List<String>> selectedItemsByCategory;
@@ -42,6 +43,7 @@ class PinData {
     required this.skills,
     required this.socialMedia,
     required this.category,
+    required this.notes,
     required this.pinColor,
     required this.selectedItems,
     required this.selectedItemsByCategory,
@@ -68,6 +70,7 @@ class PinData {
       'skills': skills,
       'socialMedia': socialMedia,
       'category': category,
+      'notes': notes,
       'pinColor': pinColor.value, // storing the int value of the color
       'selectedItems': selectedItems,
       'selectedItemsByCategory': selectedItemsByCategory,
@@ -95,6 +98,7 @@ class PinData {
       groups: map['groups'],
       skills: map['skills'],
       socialMedia: map['socialMedia'],
+      notes: map['notes'],
       category: map['category'],
       pinColor: Color((map['pinColor'] is int)
           ? map['pinColor']

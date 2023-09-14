@@ -19,6 +19,15 @@ class PinDataNotifier extends ChangeNotifier {
     'Infrastructure': [],
   };
 
+  String _selectedCategory = "";
+
+  String get selectedCategory => _selectedCategory;
+
+  set selectedCategory(String newValue) {
+    _selectedCategory = newValue;
+    notifyListeners();
+  }
+
   Future<void> saveCheckboxTitle(String title) async {
     final prefs = await SharedPreferences.getInstance();
     final key = "checkbox_titles";
